@@ -4,8 +4,8 @@ This app is meant to serve as an application to help you onboard to the GitHub e
 
 ## How to set it up and use it
 * Clone/Fork this repo
-* Generate your virutal environment - `python3 -m venv .env`
-* Activate your environment - `source .env/bin/activate`
+* Generate your virutal environment - `python3 -m venv venv`
+* Activate your environment - `source venv/bin/activate`
 * Install dependencies - `pip3 install -r requirements.txt`
 * Run the app - `python3 app.py`
 
@@ -32,7 +32,7 @@ Now you should be redirected to the App Settings -
 * Go to the `Install` tab and install the application on ``only`` your repository.
 * If you were redirected to GitHub Home Page, your app installation was successful.
 
-* Open a new terminal window and navigate to where you checked out this repo and activate virual environment as above - `source .env/bin/activate`
+* Open a new terminal window and navigate to where you checked out this repo and activate virual environment as above - `source venv/bin/activate`
 * Run `pysmee forward <SMEE_URL> http://127.0.0.1:5000/webhook/<APP_ID>` - this will forward all events to your app.
 
 ## See it in action
