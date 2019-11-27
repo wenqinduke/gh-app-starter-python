@@ -49,62 +49,62 @@ def get_token(app_id, installation_id):
     return json.dumps(response_json)
 
 
-def store_token(app_id, token_json):
-    if app_id and token_json:
+def store_token(token_json):
+    if token_json:
         try:
-            if os.path.exists(f".secret-{app_id}"):
-                os.unlink(f".secret-{app_id}")
+            if os.path.exists(f".secret"):
+                os.unlink(f".secret")
             
-            with open(f".secret-{app_id}", 'w') as secret_file:
+            with open(f".secret", 'w') as secret_file:
                 secret_file.write(json.dumps(token_json))
 
         except Exception as exc:    
-            log.error(f"Could not write secret file for App - {app_id}")
+            log.error("Could not write secret file.")
             traceback.print_exc(file=sys.stderr)
 
     else:
-        log.error(f"Invalid token for app - {app_id}")
+        log.error("Invalid token for app")
 
 
-def peek_app_token(app_id):
+def peek_app_token():
     """Peek on secret file that has the token, deserialize it and return the dict."""
-    if not os.path.exists(f".secret-{app_id}"):
+    if not os.path.exists(f".secret"):
         return None
 
     try:
-        with open(f".secret-{app_id}") as secret_file:
+        with open(f".secret") as secret_file:
             return json.loads(secret_file.read())
 
     except Exception as exc:    
-        log.error(f"Could not read secret file for App - {app_id}")
+        log.error("Could not read secret file.")
         traceback.print_exc(file=sys.stderr)
 
 
-def refresh_token(app_id):
+def refresh_token():
     """Refresh tokens of an individual app."""
     try:
-        deserialized_message = peek_app_token(app_id)
+        deserialized_message = peek_app_token()
         app_id = deserialized_message.get('app_id')
         installation_id = deserialized_message.get('installation_id')
-        store_token(app_id, get_token(app_id, installation_id))
+        store_token(get_token(app_id, installation_id))
 
     except Exception as exc:
-        log.error(f"Could not refresh token for app - {app_id}")
+        log.error("Could not refresh token.")
         traceback.print_exc(file=sys.stderr)
 
 
-def retrieve_token(app_id):
+def retrieve_token():
     """Retrieve latest token. If expired, refresh it."""
     try:
-        deserialized_message = peek_app_token(app_id)
+        deserialized_message = json.loads(peek_app_token())
 
         expires_at = deserialized_message.get('expires_at')
         if expires_at and check_expired_time(expires_at):  # Token is good, return it
             return deserialized_message
         else:  # Token expired, refresh it
-            refresh_token(app_id)
+            refresh_token()
 
-            deserialized_message = peek_app_token(app_id)
+            deserialized_message = peek_app_token()
             expires_at = deserialized_message.get('expires_at')
             if expires_at and check_expired_time(expires_at):  # Token is good, return it
                 return deserialized_message
@@ -112,7 +112,7 @@ def retrieve_token(app_id):
                 raise  # When all else fails
 
     except Exception as exc:
-        log.error(f"Could not refresh token for app - {app_id}")
+        log.error("Could not refresh token.")
         traceback.print_exc(file=sys.stderr)
 
     return None

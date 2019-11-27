@@ -19,7 +19,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(levelname)s
 app = Flask(__name__)
 
 
-@app.route('/webhook', methods=['POST'])
+@app.route('/webhooks', methods=['POST'])
 def process_message():
     log.info('Incoming webhook')
     webhook = ObjectifyJSON(request.json)

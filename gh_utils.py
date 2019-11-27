@@ -5,6 +5,8 @@ import sys
 
 from requests.auth import HTTPBasicAuth
 
+from gh_token import retrieve_token
+
 
 log = logging.getLogger(__name__)
 logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(levelname)s:%(process)s:%(name)s:%(message)s')
@@ -27,17 +29,16 @@ def add_pr_comment(webhook):
 
 
 def make_github_api_call(url, method, params=None):
-    """Send API call to Github using a personal token."""
+    """Send API call to Github with required Auth."""
+    token = retrieve_token().get('token')
+    headers = {'Accept': 'application/vnd.github.antiope-preview+json', 'Content-Type': 'application/json', 'Authorization': f'token {token}'}
 
-    # Required headers.
-    headers = {'Accept': 'application/vnd.github.antiope-preview+json', 'Content-Type': 'application/json'}
+    if method.upper() == 'POST':
+        response = requests.post(url, headers=headers, data=json.dumps(params))
+    elif method.upper() == 'GET':
+        response = requests.get(url, headers=headers)
+    else:
+        raise Exception('Invalid Request Method.')
 
-    try:
-        if method.upper() == 'POST':
-            response = requests.post(url, headers=headers, data=json.dumps(params), auth=HTTPBasicAuth(GITHUB_USER, GITHUB_TOKEN))
-        elif method.upper() == 'GET':
-            response = requests.get(url, headers=headers, auth=HTTPBasicAuth(GITHUB_USER, GITHUB_TOKEN))
-        else:
-            raise Exception('Invalid Request Method.')
-    except:
-        log.exception("Could not make a successful API call to GitHub.")
+    print(response.status_code)
+    return json.loads(response.text)
