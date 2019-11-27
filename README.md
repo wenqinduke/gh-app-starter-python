@@ -19,6 +19,7 @@ This app is meant to serve as an application to help you onboard to the GitHub e
 * Check the checkbox for `Request user authorization (OAuth) during installation`
 * Set `Webhook URL` = `<SMEE_URL>`
 * Select the Radio Button for `Enable SSL verification`
+* Under permissions, give `Read & Write` permissions for `Pull Requests`
 * Generate and Download the `Private key`, move it to your app folder on local machine and name it `.private-key`
 * Hit `Save Changes`
 
