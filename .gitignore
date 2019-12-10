@@ -137,3 +137,7 @@ venv
 # certificates
 private/*
 !private/.gitkeep
+
+# creds
+.private-key
+.secret

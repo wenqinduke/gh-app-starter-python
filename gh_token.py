@@ -103,7 +103,7 @@ def retrieve_token():
         expires_at = deserialized_message.get('expires_at')
         # Token is good, return it
         if expires_at and check_expired_time(expires_at):
-            return deserialized_message
+            return deserialized_message.get('token')
         else:  # Token expired, refresh it
             refresh_token()
 
@@ -112,7 +112,7 @@ def retrieve_token():
             # Token is good, return it
             try:
                 assert(expires_at and check_expired_time(expires_at))
-                return deserialized_message
+                return deserialized_message.get('token')
             except:
                 raise  # When all else fails
 
