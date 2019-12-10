@@ -38,17 +38,19 @@ new_comment = make_github_rest_api_call(
 def make_github_rest_api_call(api_path, method='GET', params=None):
     """Send API call to Github using a personal token."""
 
+    token = retrieve_token()
+
     # Required headers.
     headers = {'Accept': 'application/vnd.github.antiope-preview+json',
-               'Content-Type': 'application/json'}
+               'Content-Type': 'application/json',
+               'Authorization': f'Bearer {token}'}
 
     try:
         if method.upper() == 'POST':
             response = requests.post(f'{API_BASE_URL}/{api_path}', headers=headers, data=json.dumps(
-                params), auth=HTTPBasicAuth(GITHUB_USER, GITHUB_TOKEN))
+                params))
         elif method.upper() == 'GET':
-            response = requests.get(
-                url, headers=headers, auth=HTTPBasicAuth(GITHUB_USER, GITHUB_TOKEN))
+            response = requests.get(f'{API_BASE_URL}/{api_path}', headers=headers)
         else:
             raise Exception('Invalid Request Method.')
     except:
