@@ -1,37 +1,44 @@
+from bot_config import API_BASE_URL, validate_env_variables
+from gh_token import get_token, store_token
+from gh_utils import make_github_rest_api_call
+from webhook_handlers import add_pr_comment
+
 import json
 import logging
 import requests
 import sys
+import datetime
 import traceback
+import markdown2
 
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, render_template
 from flask_apscheduler import APScheduler
 from objectify_json import ObjectifyJSON
 
-from gh_token import get_token, store_token
-from gh_utils import API_BASE_URL, add_pr_comment, make_github_api_call
-
-
 log = logging.getLogger(__name__)
-logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(levelname)s:%(process)s:%(name)s:%(message)s')
 
 # Create the Flask App.
 app = Flask(__name__)
 
 
-@app.route('/webhooks', methods=['POST'])
-def process_message():
-    log.info('Incoming webhook')
-    webhook = ObjectifyJSON(request.json)
+"""
+STATIC PAGES
+==============
+These pages basically just show static HTML
 
-    # Let's react only when a new Pull Requests has been opened.
-    if request.headers['X-Github-Event'] == 'pull_request' and str(webhook.action).lower() == 'opened':
-        # Webhook schema - https://developer.github.com/v3/activity/events/types/#pullrequestevent
-        add_pr_comment(webhook)
-    else:
-        log.info("Irrelavant webhook.")
+"""
+@app.route('/')
+def welcome():
+    """Welcome page"""
+    return render_template("index.html", readme_html=markdown2.markdown_path("./README.md"))
 
-    return 'GOOD'
+
+"""
+AUTH ROUTES
+============
+
+Dynamic routes that are needed to facilitate the authentication flow
+"""
 
 
 @app.route("/authenticate/<app_id>", methods=["GET"])
@@ -40,7 +47,7 @@ def authenticate(app_id):
     try:
         app_id = str(app_id)
         installation_id = request.args.get('installation_id')
-        store_token(app_id, get_token(app_id, installation_id))
+        store_token(get_token(app_id, installation_id))
 
     except Exception:
         log.error("Unable to get and store token.")
@@ -49,5 +56,39 @@ def authenticate(app_id):
     return redirect("https://www.github.com", code=302)
 
 
-if __name__ == '__main__':
+@app.route('/webhook', methods=['POST'])
+def process_message():
+    """
+    WEBHOOK RECEIVER
+    ==================
+    If you have set up your webhook forwarding tool (i.e., smee) properly, webhook
+    payloads from github end up being sent to your python app as POST requests
+    to
+        http://localhost:5000/webhook
+
+    If you don't see expected payloads arrive here, please check the following
+
+    - Is your github repo configured to deliver webhooks to a https://smee.io URL?
+    - Is your github repo configured to deliver webhook payloads for the right EVENTS?
+    - Is your webhook forwarding tool (i.e., pysmee or smee-client) running?
+    - Is github SENDING webhooks to the same https://smee.io URL you're RECEIVING from?
+
+    """
+    log.info('Incoming webhook')
+    webhook = ObjectifyJSON(request.json)
+
+    # Let's react only when a new Pull Requests has been opened.
+    if request.headers['X-Github-Event'] == 'pull_request' and str(webhook.action).lower() == 'opened':
+        # This webhooks has this schema - https://developer.github.com/v3/activity/events/types/#pullrequestevent
+        add_pr_comment(webhook)
+    else:
+        log.info("Irrelavant webhook.")
+
+    return 'GOOD'
+
+
+if __name__ == 'app' or __name__ == '__main__':
+    print(
+        f'\n\033[96m\033[1m--- STARTING THE APP: [{datetime.datetime.now().strftime("%m/%d, %H:%M:%S")}] ---\033[0m \n')
+    validate_env_variables()
     app.run()

@@ -9,14 +9,14 @@ import time
 import traceback
 import uuid
 
+from bot_config import API_BASE_URL
 
 log = logging.getLogger(__name__)
-logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(levelname)s:%(process)s:%(name)s:%(message)s')
 
 
 def get_token(app_id, installation_id):
     """Get a token from GitHub."""
-    token_url = f"https://api.github.com/app/installations/{installation_id}/access_tokens"
+    token_url = f"{API_BASE_URL}/app/installations/{installation_id}/access_tokens"
     temp_state = str(uuid.uuid4())
     private_key = get_private_key()
 
@@ -30,14 +30,16 @@ def get_token(app_id, installation_id):
 
     try:
         # Create a Json Web Token object with the required params.
-        encoded = jwt.encode(params, private_key, algorithm='RS256').decode("utf-8")
-        headers = {'Accept': 'application/vnd.github.machine-man-preview+json', 'Authorization': f'Bearer {encoded}'}
+        encoded = jwt.encode(params, private_key,
+                             algorithm='RS256').decode("utf-8")
+        headers = {'Accept': 'application/vnd.github.machine-man-preview+json',
+                   'Authorization': f'Bearer {encoded}'}
 
         # Send request to GitHub.
         response = requests.post(token_url, headers=headers)
-    
-    except Exception as exc:    
-        log.error(f"Could get token for App - {app_id}")
+
+    except Exception as exc:
+        log.error(f"Could get token for App - {app_id}", exc)
         traceback.print_exc(file=sys.stderr)
         raise
 
@@ -54,12 +56,12 @@ def store_token(token_json):
         try:
             if os.path.exists(f".secret"):
                 os.unlink(f".secret")
-            
+
             with open(f".secret", 'w') as secret_file:
                 secret_file.write(json.dumps(token_json))
 
-        except Exception as exc:    
-            log.error("Could not write secret file.")
+        except Exception as exc:
+            log.error(f'Could not write secret file.\n{exc}')
             traceback.print_exc(file=sys.stderr)
 
     else:
@@ -75,8 +77,8 @@ def peek_app_token():
         with open(f".secret") as secret_file:
             return json.loads(secret_file.read())
 
-    except Exception as exc:    
-        log.error("Could not read secret file.")
+    except Exception as exc:
+        log.error(f'Could not read secret file.\n{exc}')
         traceback.print_exc(file=sys.stderr)
 
 
@@ -89,7 +91,7 @@ def refresh_token():
         store_token(get_token(app_id, installation_id))
 
     except Exception as exc:
-        log.error("Could not refresh token.")
+        log.error(f'Could not refresh token.\n{exc}')
         traceback.print_exc(file=sys.stderr)
 
 
@@ -99,20 +101,23 @@ def retrieve_token():
         deserialized_message = json.loads(peek_app_token())
 
         expires_at = deserialized_message.get('expires_at')
-        if expires_at and check_expired_time(expires_at):  # Token is good, return it
+        # Token is good, return it
+        if expires_at and check_expired_time(expires_at):
             return deserialized_message
         else:  # Token expired, refresh it
             refresh_token()
 
             deserialized_message = peek_app_token()
             expires_at = deserialized_message.get('expires_at')
-            if expires_at and check_expired_time(expires_at):  # Token is good, return it
+            # Token is good, return it
+            try:
+                assert(expires_at and check_expired_time(expires_at))
                 return deserialized_message
-            else:
+            except:
                 raise  # When all else fails
 
     except Exception as exc:
-        log.error("Could not refresh token.")
+        log.error(f'Could not refresh token.\n{exc}')
         traceback.print_exc(file=sys.stderr)
 
     return None
@@ -127,8 +132,8 @@ def get_private_key():
         with open(".private-key") as secret_file:
             return secret_file.read()
 
-    except Exception as exc:    
-        log.error("Could not read private key.")
+    except Exception as exc:
+        log.error(f'Could not read private key.\n{exc}')
         traceback.print_exc(file=sys.stderr)
 
 
