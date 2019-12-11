@@ -36,7 +36,7 @@ Now you should be redirected to the App Settings -
 - If you were redirected to GitHub Home Page, your app installation was successful.
 
 - Open a new terminal window and navigate to where you checked out this repo and activate virual environment as above - `source venv/bin/activate`
-- Run `pysmee forward <SMEE_URL> http://127.0.0.1:5000/webhook/<APP_ID>` - this will forward all events to your app.
+- Run `pysmee forward <SMEE_URL> http://127.0.0.1:5000/webhook` - this will forward all events to your app.
 
 ## See it in action
 
