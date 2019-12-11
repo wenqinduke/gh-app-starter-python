@@ -1,20 +1,41 @@
 # Python GitHub App
 
-This app is meant to serve as an application to help you onboard to the GitHub ecosystem and start using GitHub Apps.
+This app is meant to serve as an application to help you onboard to the GitHub ecosystem and start using GitHub Webhooks & Apps.
 
-## How to set it up and use it
+## Getting Started
+
+### Initial Project Setup
 
 - Clone/Fork this repo
-- Generate your virutal environment - `python3 -m venv venv`
-- Activate your environment - `source venv/bin/activate`
-- Install dependencies - `pip3 install -r requirements.txt`
-- Run the app - `flask run`
+- Generate your virutal environment
 
-## How to use setup and install the app
+```sh
+python3 -m venv venv
+```
 
-- Create a new repository at https://github.com/li-playground/
+- Activate your environment
+
+```sh
+source venv/bin/activate
+```
+
+- Install dependencies
+
+```sh
+pip3 install -r requirements.txt
+```
+
+- Run the app
+
+```
+flask run
+```
+
+### Connecting to GitHub
+
+- Create a new public repository at https://github.com/new
 - Visit https://smee.io/ and click on `Start a new Channel` and note the URL
-- Create a new GitHub App - https://github.com/organizations/li-playground/settings/apps/new
+- Create a new GitHub App - https://github.com/settings/apps/new
 - Give it a distinct name and description (prefix your LDAP)
 - Set `Homepage URL` = `http://localhost:5000/`
 - Set `User authorization callback URL` = `http://localhost:5000/authenticate/`
@@ -23,7 +44,7 @@ This app is meant to serve as an application to help you onboard to the GitHub e
 - Select the Radio Button for `Enable SSL verification`
 - Under permissions, give `Read & Write` permissions for `Pull Requests`
 - Under `Subscribe to Events`, check `Pull Request`
-- Generate and Download the `Private key`, move it to your app folder on local machine and name it `.private-key`
+- Generate and Download the `Private key`, move it to your app folder on local machine and name it `./private/gh-app.key`
 - Hit `Save Changes`
 
 Now you should be redirected to the App Settings -

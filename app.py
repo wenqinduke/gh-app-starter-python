@@ -1,5 +1,5 @@
 from bot_config import API_BASE_URL, validate_env_variables
-from gh_token import get_token, store_token
+# from gh_oauth_token import get_token, store_token
 from gh_utils import make_github_rest_api_call
 from webhook_handlers import add_pr_comment
 
@@ -12,7 +12,6 @@ import traceback
 import markdown2
 
 from flask import Flask, request, redirect, render_template
-from flask_apscheduler import APScheduler
 from objectify_json import ObjectifyJSON
 
 log = logging.getLogger(__name__)
@@ -38,22 +37,23 @@ AUTH ROUTES
 ============
 
 Dynamic routes that are needed to facilitate the authentication flow
+
+We will let you know when it's appropriate to un-comment this
 """
 
+# @app.route("/authenticate/<app_id>", methods=["GET"])
+# def authenticate(app_id):
+#     """Incoming Installation Request. Accept and get a new token."""
+#     try:
+#         app_id = str(app_id)
+#         installation_id = request.args.get('installation_id')
+#         store_token(get_token(app_id, installation_id))
 
-@app.route("/authenticate/<app_id>", methods=["GET"])
-def authenticate(app_id):
-    """Incoming Installation Request. Accept and get a new token."""
-    try:
-        app_id = str(app_id)
-        installation_id = request.args.get('installation_id')
-        store_token(get_token(app_id, installation_id))
+#     except Exception:
+#         log.error("Unable to get and store token.")
+#         traceback.print_exc(file=sys.stderr)
 
-    except Exception:
-        log.error("Unable to get and store token.")
-        traceback.print_exc(file=sys.stderr)
-
-    return redirect("https://www.github.com", code=302)
+#     return redirect("https://www.github.com", code=302)
 
 
 @app.route('/webhook', methods=['POST'])
@@ -74,8 +74,9 @@ def process_message():
     - Is github SENDING webhooks to the same https://smee.io URL you're RECEIVING from?
 
     """
-    log.info('Incoming webhook')
     webhook = ObjectifyJSON(request.json)
+    log.info(
+        f'Incoming webhook [{webhook.action}]: {json.dumps(webhook,  sort_keys=True, indent=4)}')
 
     # Let's react only when a new Pull Requests has been opened.
     if request.headers['X-Github-Event'] == 'pull_request' and str(webhook.action).lower() == 'opened':
