@@ -42,3 +42,7 @@ Now you should be redirected to the App Settings -
 
 - Go ahead and create a new Pull Request in the repository you just added the webhook to
 - Voila! A new comment should be added to it.
+
+## Legal
+
+&copy; 2019 LinkedIn
