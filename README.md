@@ -16,8 +16,8 @@ This app is meant to serve as an application to help you onboard to the GitHub e
 - Visit https://smee.io/ and click on `Start a new Channel` and note the URL
 - Create a new GitHub App - https://github.com/organizations/li-playground/settings/apps/new
 - Give it a distinct name and description (prefix your LDAP)
-- Set `Homepage URL` = `https://localhost:5000/`
-- Set `User authorization callback URL` = `https://localhost:5000/authenticate/`
+- Set `Homepage URL` = `http://localhost:5000/`
+- Set `User authorization callback URL` = `http://localhost:5000/authenticate/`
 - Check the checkbox for `Request user authorization (OAuth) during installation`
 - Set `Webhook URL` = `<SMEE_URL>`
 - Select the Radio Button for `Enable SSL verification`
