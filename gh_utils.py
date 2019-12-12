@@ -55,3 +55,20 @@ new_comment = make_github_rest_api_call(
             raise Exception('Invalid Request Method.')
     except:
         log.exception("Could not make a successful API call to GitHub.")
+
+
+def set_check_on_pr(repo_full_name, check_name, check_status, check_conclusion, head_sha, output_title=None, output_summary=None):
+    payload = {
+        'name': check_name,
+        'status': check_status,
+        'head_sha': head_sha,
+    }
+
+    if check_conclusion:
+        payload['conclusion'] = check_conclusion
+
+    if output_title and output_summary:
+        payload['output'] = dict(title=output_title, summary=output_summary)
+
+    api_path = f'repos/{repo_full_name}/check-runs'
+    make_github_rest_api_call(api_path, 'POST', params=payload)
