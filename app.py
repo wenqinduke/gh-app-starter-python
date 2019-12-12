@@ -75,8 +75,15 @@ def process_message():
 
     """
     webhook = ObjectifyJSON(request.json)
-    log.info(
-        f'Incoming webhook [{webhook.action}]: {json.dumps(str(webhook),  sort_keys=True, indent=4)}')
+    # log.info(
+    #     f'Incoming webhook [{webhook.action}]: {json.dumps(str(webhook),  sort_keys=True, indent=4)}')
+
+    # Let's react only when a new Pull Requests has been opened.
+    if request.headers['X-Github-Event'] == 'pull_request' and str(webhook.action).lower() == 'opened':
+        # This webhooks has this schema - https://developer.github.com/v3/activity/events/types/#pullrequestevent
+        log.info("New Pull Request opened.")
+    else:
+        log.info("Irrelavant webhook.")
 
     return 'GOOD'
 
