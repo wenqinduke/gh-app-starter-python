@@ -31,6 +31,13 @@ pip3 install -r requirements.txt
 flask run
 ```
 
+
+## How to set it up and use it
+
+- Generate a Personal Access Token on GitHub - https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
+- Copy `.env.example` to `.env`
+- Add this Personal Access Token and your GitHub Username to `.env` on Line 7 and 14.
+
 ## How to use Webhooks
 
 - Create a new repository at https://github.com/gh-training/

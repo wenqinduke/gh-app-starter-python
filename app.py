@@ -1,7 +1,7 @@
 from bot_config import API_BASE_URL, validate_env_variables
 # from gh_oauth_token import get_token, store_token
-# from gh_utils import make_github_rest_api_call
-# from webhook_handlers import add_pr_comment
+from gh_utils import make_github_rest_api_call
+from webhook_handlers import add_pr_comment
 
 import json
 import logging
@@ -81,7 +81,7 @@ def process_message():
     # Let's react only when a new Pull Requests has been opened.
     if request.headers['X-Github-Event'] == 'pull_request' and str(webhook.action).lower() == 'opened':
         # This webhooks has this schema - https://developer.github.com/v3/activity/events/types/#pullrequestevent
-        log.info("New Pull Request opened.")
+        add_pr_comment(webhook)
     else:
         log.info("Irrelavant webhook.")
 
