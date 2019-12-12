@@ -1,5 +1,5 @@
 from bot_config import API_BASE_URL, validate_env_variables
-# from gh_oauth_token import get_token, store_token
+from gh_oauth_token import get_token, store_token
 from gh_utils import make_github_rest_api_call
 from webhook_handlers import add_pr_comment, check_testing_done
 
@@ -41,19 +41,19 @@ Dynamic routes that are needed to facilitate the authentication flow
 We will let you know when it's appropriate to un-comment this
 """
 
-# @app.route("/authenticate/<app_id>", methods=["GET"])
-# def authenticate(app_id):
-#     """Incoming Installation Request. Accept and get a new token."""
-#     try:
-#         app_id = str(app_id)
-#         installation_id = request.args.get('installation_id')
-#         store_token(get_token(app_id, installation_id))
+@app.route("/authenticate/<app_id>", methods=["GET"])
+def authenticate(app_id):
+    """Incoming Installation Request. Accept and get a new token."""
+    try:
+        app_id = str(app_id)
+        installation_id = request.args.get('installation_id')
+        store_token(get_token(app_id, installation_id))
 
-#     except Exception:
-#         log.error("Unable to get and store token.")
-#         traceback.print_exc(file=sys.stderr)
+    except Exception:
+        log.error("Unable to get and store token.")
+        traceback.print_exc(file=sys.stderr)
 
-#     return redirect("https://www.github.com", code=302)
+    return redirect("https://www.github.com", code=302)
 
 
 @app.route('/webhook', methods=['POST'])
