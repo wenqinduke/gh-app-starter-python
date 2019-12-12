@@ -5,7 +5,7 @@ import sys
 
 from requests.auth import HTTPBasicAuth
 
-# from gh_oauth_token import retrieve_token
+from gh_oauth_token import retrieve_token
 from bot_config import API_BASE_URL, GH_USER_TOKEN, GH_USER
 
 log = logging.getLogger(__name__)
@@ -36,21 +36,21 @@ new_comment = make_github_rest_api_call(
 ```
     """
 
-    # token = retrieve_token()
-    token = GH_USER_TOKEN
+    token = retrieve_token()
+    # token = GH_USER_TOKEN
 
     # Required headers.
     headers = {'Accept': 'application/vnd.github.antiope-preview+json',
                'Content-Type': 'application/json',
-               #    'Authorization': f'Bearer {token}'
+                  'Authorization': f'Bearer {token}'
                }
 
     try:
         if method.upper() == 'POST':
             response = requests.post(f'{API_BASE_URL}/{api_path}', headers=headers, data=json.dumps(
-                params), auth=HTTPBasicAuth(GH_USER, GH_USER_TOKEN))
+                params))
         elif method.upper() == 'GET':
-            response = requests.get(f'{API_BASE_URL}/{api_path}', headers=headers, auth=HTTPBasicAuth(GH_USER, GH_USER_TOKEN))
+            response = requests.get(f'{API_BASE_URL}/{api_path}', headers=headers)
         else:
             raise Exception('Invalid Request Method.')
     except:
