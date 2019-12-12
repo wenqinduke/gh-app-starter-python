@@ -31,31 +31,12 @@ pip3 install -r requirements.txt
 flask run
 ```
 
-### Connecting to GitHub
+## How to use Webhooks
 
-- Create a new public repository at https://github.com/new
+- Create a new repository at https://github.com/gh-training/
 - Visit https://smee.io/ and click on `Start a new Channel` and note the URL
-- Create a new GitHub App - https://github.com/settings/apps/new
-- Give it a distinct name and description (prefix your LDAP)
-- Set `Homepage URL` = `http://localhost:5000/`
-- Set `User authorization callback URL` = `http://localhost:5000/authenticate/`
-- Check the checkbox for `Request user authorization (OAuth) during installation`
-- Set `Webhook URL` = `<SMEE_URL>`
-- Select the Radio Button for `Enable SSL verification`
-- Under permissions, give `Read & Write` permissions for `Pull Requests`
-- Under `Subscribe to Events`, check `Pull Request`
-- Generate and Download the `Private key`, move it to your app folder on local machine and name it `./private/gh-app.key`
-- Hit `Save Changes`
-
-Now you should be redirected to the App Settings -
-
-- Under the `General` tab on the left, find out your `App ID`
-- Append this `App ID` to `User authorization callback URL`, for instance, `https://localhost:5000/authenticate/40221`
-- Hit `Save Changes`
-
-- Go to the `Install` tab and install the application on `only` your repository.
-- If you were redirected to GitHub Home Page, your app installation was successful.
-
+- Go to your Repository's Settings -> Webhooks -> Add Webhook
+- Enter the Smee URL from the above step here and set Content Type to `application/json`, skip the secret and select `Send me everything`
 - Open a new terminal window and navigate to where you checked out this repo and activate virual environment as above - `source venv/bin/activate`
 - Run `pysmee forward <SMEE_URL> http://127.0.0.1:5000/webhook` - this will forward all events to your app.
 
