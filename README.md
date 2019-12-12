@@ -23,7 +23,7 @@ This app is meant to serve as an application to help you onboard to the GitHub e
 - Select the Radio Button for `Enable SSL verification`
 - Under permissions, give `Read & Write` permissions for `Pull Requests`
 - Under `Subscribe to Events`, check `Pull Request`
-- Generate and Download the `Private key`, move it to your app folder on local machine and name it `.private-key`
+- Generate and Download the `Private key`, move it to `private` folder in your app on local machine and name it `.private-key`
 - Hit `Save Changes`
 
 Now you should be redirected to the App Settings -
