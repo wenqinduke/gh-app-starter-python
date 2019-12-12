@@ -45,24 +45,12 @@ new_comment = make_github_rest_api_call(
                #    'Authorization': f'Bearer {token}'
                }
 
-    # API url
-    url = f'{API_BASE_URL}/{api_path}'
-    log.info(
-        f'sending {method.upper()} request to {url} w/ data {json.dumps(params)}')
     try:
         if method.upper() == 'POST':
-            response = requests.post(
-                url,
-                headers=headers,
-                data=json.dumps(params),
-                auth=HTTPBasicAuth(GH_USER, GH_USER_TOKEN)  # basic auth
-            )
+            response = requests.post(f'{API_BASE_URL}/{api_path}', headers=headers, data=json.dumps(
+                params), auth=HTTPBasicAuth(GH_USER, GH_USER_TOKEN))
         elif method.upper() == 'GET':
-            response = requests.get(
-                url,
-                headers=headers,
-                auth=HTTPBasicAuth(GH_USER, GH_USER_TOKEN)  # basic auth
-            )
+            response = requests.get(f'{API_BASE_URL}/{api_path}', headers=headers, auth=HTTPBasicAuth(GH_USER, GH_USER_TOKEN))
         else:
             raise Exception('Invalid Request Method.')
     except:
