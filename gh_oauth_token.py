@@ -13,6 +13,20 @@ from bot_config import API_BASE_URL
 
 log = logging.getLogger(__name__)
 
+"""
+TO WORKSHOP ATTENDEES:
+======================
+
+You should not have to touch anything in this file. It deals with 
+building and signing the JWT necessary to facilitate OAuth 2.0
+authentication and authorization w/ GitHub. 
+
+"""
+
+# The paths of two things that should never be checked into git
+_token_storage_path = f'private/.secret'
+_private_key_path = f'private/gh-app.key'
+
 
 def get_token(app_id, installation_id):
     """Get a token from GitHub."""
@@ -33,7 +47,8 @@ def get_token(app_id, installation_id):
         encoded = jwt.encode(params, private_key,
                              algorithm='RS256').decode("utf-8")
         headers = {'Accept': 'application/vnd.github.machine-man-preview+json',
-                   'Authorization': f'Bearer {encoded}'}
+                   'Authorization': f'Bearer {encoded}'  # OAuth 2.0
+                   }
 
         # Send request to GitHub.
         response = requests.post(token_url, headers=headers)
@@ -54,10 +69,10 @@ def get_token(app_id, installation_id):
 def store_token(token_json):
     if token_json:
         try:
-            if os.path.exists(f".secret"):
-                os.unlink(f".secret")
+            if os.path.exists(_token_storage_path):
+                os.unlink(_token_storage_path)
 
-            with open(f".secret", 'w') as secret_file:
+            with open(_token_storage_path, 'w') as secret_file:
                 secret_file.write(json.dumps(token_json))
 
         except Exception as exc:
@@ -65,16 +80,16 @@ def store_token(token_json):
             traceback.print_exc(file=sys.stderr)
 
     else:
-        log.error("Invalid token for app")
+        log.error("Invalid (empty) token for app")
 
 
 def peek_app_token():
     """Peek on secret file that has the token, deserialize it and return the dict."""
-    if not os.path.exists(f".secret"):
+    if not os.path.exists(_token_storage_path):
         return None
 
     try:
-        with open(f".secret") as secret_file:
+        with open(_token_storage_path) as secret_file:
             return json.loads(secret_file.read())
 
     except Exception as exc:
@@ -125,11 +140,11 @@ def retrieve_token():
 
 def get_private_key():
     """Read private key from hidden file and return it."""
-    if not os.path.exists(".private-key"):
+    if not os.path.exists(_private_key_path):
         return None
 
     try:
-        with open(".private-key") as secret_file:
+        with open(_private_key_path) as secret_file:
             return secret_file.read()
 
     except Exception as exc:
