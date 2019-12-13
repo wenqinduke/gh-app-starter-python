@@ -1,4 +1,4 @@
-## CHANGE ## pull request! 
+## CHANGE ##
 ## Another change ##
 # Python GitHub App
 
